@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+from bot import Bot
+from processors import Server
+
+
+if __name__ == '__main__':
+    """ Mac 에서 멀티 프로세싱 관련 오류 날 경우 환경변수에 아래 항목 추가.
+    export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+    """
+    try:
+        server = Server()
+        bot = Bot()
+        bot.run()
+        server.run()
+    except Exception as e:
+        print(e)
+    finally:
+        if 'bot' in globals() and bot is not None:
+            bot.stop()
+        if 'server' in globals() and server is not None:
+            server.stop()
