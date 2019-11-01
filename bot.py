@@ -7,7 +7,7 @@ from telegram.ext import CommandHandler, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 import common
-from common import Prototype
+from processors import Prototype
 
 HELP_TEXT = """
 Commands
@@ -20,8 +20,9 @@ Commands
 
 class Bot(Prototype):
     """Telegram API 통신을 해주는 봇으로 채팅방에 접속하여 /start 입력 또는 start 버튼을 클릭하면 활성화 된다."""
-    def initialize(self):
-        self.grpc_address = f"{self.config['server']['ipaddr']}:{self.config['server']['port']}"
+    def __init__(self):
+        self.name = self.__class__.__name__
+        super().__init__(self.name)
         self.updater = Updater(token=self.config['bot']['token'], use_context=True)
         self.dispatcher = self.updater.dispatcher
         self.add_handler()
@@ -30,7 +31,7 @@ class Bot(Prototype):
         self.dispatcher.add_handler(CommandHandler('help', self._help))
         self.dispatcher.add_handler(CommandHandler('check', self._bot_check))
         self.dispatcher.add_handler(CommandHandler('disk', self._display_disk_check_menu))
-        self.dispatcher.add_handler(CommandHandler('localdisk', self._disk_status))
+        self.dispatcher.add_handler(CommandHandler('localdisk', self._local_disk_status))
         self.dispatcher.add_handler(CallbackQueryHandler(self._button))
         self.dispatcher.add_error_handler(self.error)
 
@@ -54,10 +55,10 @@ class Bot(Prototype):
         self.logger.debug('Bot check call....')
         context.bot.send_message(chat_id=update.message.chat_id, text="Bot is alive...")
 
-    def _disk_status(self, update, context):
-        self.logger.debug('disk_status call...')
+    def _local_disk_status(self, update, context):
+        self.logger.debug('local_disk_status call...')
         ipaddr = self.config['target_server']['localhost']['ipaddr']
-        text = common.get_cmd_request(self.config, 'disk', 'localhost')
+        text = common.get_disk_space(self.config['target_server']['localhost'])
         self.logger.debug(f'RETURN [{text}]')
         context.bot.send_message(chat_id=update.message.chat_id, text=text[ipaddr])
 
@@ -72,7 +73,7 @@ class Bot(Prototype):
         select = query.data
         ipaddr = self.config['target_server'][select]['ipaddr']
         if 'localhost' == select:
-            text = common.get_cmd_request(self.config, 'disk', select)
+            text = common.get_disk_space(self.config['target_server'][select])
         else:
             text = 'Not found option...'
         self.logger.debug(f'{text}')

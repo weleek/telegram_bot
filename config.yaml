@@ -1,22 +1,24 @@
 ---
-server:
-  ipaddr: localhost
-  port: 5790
-
-client:
-  ipaddr: localhost
-  port: 5789
-
 target_server:
+  centos:
+    ipaddr: 127.0.0.1
+    port: 32768
+    username: admin
+    password:
+    keyfile: ~/.ssh/id_rsa
   localhost:
-    ipaddr: 192.168.0.187
+    ipaddr: localhost
     port: 32768
     username: admin
     password:
     keyfile: ~/.ssh/id_rsa
 
+polling_time:
+  disk_interval: 60
+
 bot:
-  token: 928771573:AAFjz31if1zs543Ml535gGSAtk38HqdJIWE
+  token: iF8Es0TU9KXBxNSclJqhFXGEF4EjPlHxbSp3RREspCCYjKe2A0QewuE+uBQ7waWV25sVFq5uEQy3SiYFSKT8sg==
+  chat_id: 811001656
 
 logging:
   level: debug

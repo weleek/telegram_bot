@@ -2,5 +2,4 @@ pexpect==4.7.0
 colorlog==4.0.2
 python-telegram-bot==12.2.0
 PyYAML==5.1.2
-grpcio==1.23.0
-grpcio-tools==1.23.0
+pycrypto==2.6.1

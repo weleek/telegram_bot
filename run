@@ -1,7 +1,27 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+from processors import Worker
+from server_checker import ProducerProcess, AnalysisProcess
 from bot import Bot
-from processors import Server
+
+
+class Core(Worker):
+    def __init__(self):
+        super().__init__()
+        self.logger.info(f'{self.__class__.__name__} initialize call...')
+        self.producer = ProducerProcess(self)
+        self.analysis = AnalysisProcess(self)
+        self.bot = Bot()
+
+    def run(self):
+        self.producer.run()
+        self.analysis.run()
+        self.bot.run()
+
+    def stop(self):
+        self.producer.stop()
+        self.analysis.stop()
+        self.bot.stop()
 
 
 if __name__ == '__main__':
@@ -9,14 +29,11 @@ if __name__ == '__main__':
     export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
     """
     try:
-        server = Server()
-        bot = Bot()
-        bot.run()
-        server.run()
+        global core
+        core = Core()
+        core.run()
+    except KeyboardInterrupt as e:
+        core.stop()
+        print('Bye...')
     except Exception as e:
         print(e)
-    finally:
-        if 'bot' in globals() and bot is not None:
-            bot.stop()
-        if 'server' in globals() and server is not None:
-            server.stop()
